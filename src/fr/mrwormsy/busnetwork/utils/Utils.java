@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import fr.mrwormsy.busnetwork.Node.Node;
+import fr.mrwormsy.busnetwork.node.Node;
 
 public class Utils {
 

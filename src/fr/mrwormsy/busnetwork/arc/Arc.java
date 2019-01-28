@@ -1,6 +1,6 @@
 package fr.mrwormsy.busnetwork.arc;
 
-import fr.mrwormsy.busnetwork.Node.Node;
+import fr.mrwormsy.busnetwork.node.Node;
 
 public class Arc {
 

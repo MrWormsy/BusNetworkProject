@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import com.mysql.jdbc.Connection;
 
-import fr.mrwormsy.busnetwork.Graph.Graph;
+import fr.mrwormsy.busnetwork.graph.Graph;
 
 public class BusNetwork {
 
