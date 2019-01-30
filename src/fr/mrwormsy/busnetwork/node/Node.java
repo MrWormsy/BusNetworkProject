@@ -21,6 +21,12 @@ public class Node {
 	//List time of stop in an another way (ascending)
 	private ArrayList<Integer> listTimeOfStopSecondWay;
 	
+	//List time of stop in one way (ascending) (vacations)
+	private ArrayList<Integer> listTimeOfStopFirstWayVacations;
+		
+	//List time of stop in an another way (ascending) (vacations)
+	private ArrayList<Integer> listTimeOfStopSecondWayVacations;
+	
 	// === Constructor ===
 	
 	public Node(int id, String name) {
@@ -67,10 +73,6 @@ public class Node {
 	public void setListTimeOfStopFirstWay(ArrayList<Integer> listTimeOfStopFirstWay) {
 		this.listTimeOfStopFirstWay = listTimeOfStopFirstWay;
 	}
-
-	public void AddTimeOfStopToListTimeOfStopFirstWay (int timeOfStop) {
-		this.listTimeOfStopFirstWay.add(timeOfStop);
-	}
 	
 	public ArrayList<Integer> getListTimeOfStopSecondWay() {
 		return listTimeOfStopSecondWay;
@@ -79,8 +81,20 @@ public class Node {
 	public void setListTimeOfStopSecondWay(ArrayList<Integer> listTimeOfStopSecondWay) {
 		this.listTimeOfStopSecondWay = listTimeOfStopSecondWay;
 	}
-	
-	public void AddTimeOfStopToListTimeOfStopSecondWay (int timeOfStop) {
-		this.listTimeOfStopSecondWay.add(timeOfStop);
+
+	public ArrayList<Integer> getListTimeOfStopFirstWayVacations() {
+		return listTimeOfStopFirstWayVacations;
+	}
+
+	public void setListTimeOfStopFirstWayVacations(ArrayList<Integer> listTimeOfStopFirstWayVacations) {
+		this.listTimeOfStopFirstWayVacations = listTimeOfStopFirstWayVacations;
+	}
+
+	public ArrayList<Integer> getListTimeOfStopSecondWayVacations() {
+		return listTimeOfStopSecondWayVacations;
+	}
+
+	public void setListTimeOfStopSecondWayVacations(ArrayList<Integer> listTimeOfStopSecondWayVacations) {
+		this.listTimeOfStopSecondWayVacations = listTimeOfStopSecondWayVacations;
 	}
 }

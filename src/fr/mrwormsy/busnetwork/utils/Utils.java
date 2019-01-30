@@ -24,16 +24,160 @@ public class Utils {
 		return Arrays.asList(lineContainingStops.split(" N "));
 	}
 
-	public static void setListsOfTimeOfEachStops(Scanner scanner, ArrayList<Node> nodes) {
+	//Returns the value of the time from the String format of the time (if the string we return -1 which means the bus do not stop here)
+	public static int getTimeFromStringFormat(String string) {
 		
-		String line = "";
+		if (string.equalsIgnoreCase("-")) {
+			return -1;
+		}
 		
-		do {
-			line = scanner.nextLine();
-			
-			
-		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty
-		
+		return Integer.valueOf(string.split(":")[0]) * 60 + Integer.valueOf(string.split(":")[1]);
 	}
 	
+	public static String getTImeHMFormat(int time) {
+		
+		if (time == -1) {
+			return "-";
+		}
+
+		int hours = (time - ((int) time%60)) / 60;
+		int minutes = (int) (time - (60 * hours));
+		
+		return "".concat(String.format("%02d", hours).concat(":").concat(String.format("%02d", minutes)));
+		
+		//return "".concat(String.valueOf(hours)).concat(":").concat(String.valueOf(minutes));
+	}
+	
+	public static void setListsOfTimeOfEachStops(Scanner scanner, ArrayList<Node> nodes) {
+		
+		
+		//First way
+		String line = "";
+		int i = 0;
+		line = scanner.nextLine();
+		do {			
+			String[] lineArray = line.split(" ");
+			
+			String stopName = null;
+			ArrayList<Integer> timeStops = new ArrayList<Integer>();
+			
+			for(String l : lineArray) {
+				
+				//If this is the first iteration this means this is the name of the stop
+				if (stopName == null) {
+					stopName = l;
+				} else {					
+					timeStops.add(Utils.getTimeFromStringFormat(l));
+				}
+			}
+			
+			//When we reach here we do know that the list of time is full			
+			nodes.get(i).setListTimeOfStopFirstWay(timeStops);		
+			i++;
+			
+			line = scanner.nextLine();
+		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty (End of the time table)
+		
+		//Blank space has been read...
+		
+		//Second way
+		line = "";
+		i = nodes.size() - 1;
+		line = scanner.nextLine();
+		do {		
+			String[] lineArray = line.split(" ");
+			
+			String stopName = null;
+			ArrayList<Integer> timeStops = new ArrayList<Integer>();
+			
+			for(String l : lineArray) {
+				
+				//If this is the first iteration this means this is the name of the stop
+				if (stopName == null) {
+					stopName = l;
+				} else {
+					timeStops.add(Utils.getTimeFromStringFormat(l));
+				}
+			}
+			
+			//When we reach here we do know that the list of time is full
+			nodes.get(i).setListTimeOfStopSecondWay(timeStops);		
+			i--;
+			
+			line = scanner.nextLine();
+		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty (End of the time table)
+		
+		//Blank space has been read...
+		
+		//We have to read two lines because of the file format
+		scanner.nextLine();
+		scanner.nextLine();
+		
+		//First way
+		line = "";
+		i = 0;
+		line = scanner.nextLine();
+		do {			
+			String[] lineArray = line.split(" ");
+			
+			String stopName = null;
+			ArrayList<Integer> timeStops = new ArrayList<Integer>();
+			
+			for(String l : lineArray) {
+				
+				//If this is the first iteration this means this is the name of the stop
+				if (stopName == null) {
+					stopName = l;
+				} else {					
+					timeStops.add(Utils.getTimeFromStringFormat(l));
+				}
+			}
+			
+			//When we reach here we do know that the list of time is full			
+			nodes.get(i).setListTimeOfStopFirstWayVacations(timeStops);		
+			i++;
+			
+			line = scanner.nextLine();
+		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty (End of the time table)
+		
+		//Blank space has been read...
+		
+		//Second way when vacations
+		line = "";
+		i = nodes.size() - 1;
+		line = scanner.nextLine();
+		do {		
+			String[] lineArray = line.split(" ");
+			
+			String stopName = null;
+			ArrayList<Integer> timeStops = new ArrayList<Integer>();
+			
+			for(String l : lineArray) {
+				
+				//If this is the first iteration this means this is the name of the stop
+				if (stopName == null) {
+					stopName = l;
+				} else {
+					timeStops.add(Utils.getTimeFromStringFormat(l));
+				}
+			}
+			
+			//When we reach here we do know that the list of time is full
+			nodes.get(i).setListTimeOfStopSecondWayVacations(timeStops);		
+			i--;
+			
+			//If we reach the end of the file we break the loop and we return
+			if (!scanner.hasNextLine()) {
+				break;
+			}
+			
+			line = scanner.nextLine();
+		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty (End of the time table)
+		
+	}
+
+	
 }
+
+
+
