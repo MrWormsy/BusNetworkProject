@@ -2,6 +2,8 @@ package fr.mrwormsy.busnetwork.node;
 
 import java.util.ArrayList;
 
+import fr.mrwormsy.busnetwork.utils.Utils;
+
 public class Node {
 
 	// === Variables ===
@@ -96,5 +98,25 @@ public class Node {
 
 	public void setListTimeOfStopSecondWayVacations(ArrayList<Integer> listTimeOfStopSecondWayVacations) {
 		this.listTimeOfStopSecondWayVacations = listTimeOfStopSecondWayVacations;
+	}	
+	
+	//Get id of the closest time of a specific listOfTimeOfStop (the next one), returns -1 if the last bus has already left the stop and there is no other time
+	public int getClosestIdOfListOfTime(ArrayList<Integer> arrayListOfStop, String hhmmFormat) {
+		
+		int timeUnformated = Utils.getTimeFromStringFormat(hhmmFormat);
+		
+		if (arrayListOfStop.get(0) >= timeUnformated) {
+			return 0;
+		}
+		
+		for(int i = 0; i < arrayListOfStop.size() - 1; i++) {
+			if (arrayListOfStop.get(i) < timeUnformated && arrayListOfStop.get(i + 1) >= timeUnformated) {
+				return i + 1;
+			}
+		}
+		return -1;
 	}
+	
+	
+	
 }

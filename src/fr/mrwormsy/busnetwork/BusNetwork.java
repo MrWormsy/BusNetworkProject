@@ -9,6 +9,8 @@ import com.mysql.jdbc.Connection;
 
 import fr.mrwormsy.busnetwork.arc.Arc;
 import fr.mrwormsy.busnetwork.graph.Graph;
+import fr.mrwormsy.busnetwork.node.Node;
+import fr.mrwormsy.busnetwork.utils.Utils;
 
 public class BusNetwork {
 
@@ -26,21 +28,22 @@ public class BusNetwork {
 		//We init the list of bus stop to empty
 		setListOfBusLines(new ArrayList<Graph>());
 		
-		try {
-			//The file
-			file = new FileInputStream("2_Piscine-Patinoire_Campus.txt");
-			
+		try {			
 			//We will use a scanner which is easier to use
+			file = new FileInputStream("2_Piscine-Patinoire_Campus.txt");
 			Scanner scanner = new Scanner(file);
-			
 			Graph graph = Graph.getGraphFromFile(scanner);
 			graph.buildArcs();
 			
 			listOfBusLines.add(graph);
 			
-			for(Arc arc : graph.getArcListFirstWay()) {
-				System.out.print(arc.getBefore().getName() + " (" + arc.getHMFormat() + ") --> " + arc.getAfter().getName() + " *** ");
-			}
+			//We will use a scanner which is easier to use
+			file = new FileInputStream("1_Poisy-ParcDesGlaisins.txt");
+			scanner = new Scanner(file);
+			graph = Graph.getGraphFromFile(scanner);
+			graph.buildArcs();
+			
+			listOfBusLines.add(graph);
 			
 			askTheClient();
 			
@@ -57,13 +60,63 @@ public class BusNetwork {
 	public static void askTheClient() {
 		
 		//First we need to display where the person wants to go
-		System.out.println("\nWhere do you want to go ? ");
+		System.out.print("\nWhere do you want to go ? ");
 		Scanner scanner = new Scanner(System.in);
-		System.out.println(scanner.nextLine());
+		
+		Node nodeB = null;
+		
+		for(Graph graph : getListOfBusLines()) {
+			nodeB = graph.getNodeFromString(scanner.nextLine());
+			if (nodeB != null) {
+				break;
+			}
+		}
 		
 		//Then from where
+		System.out.print("\nFrom Where ? ");
+		scanner = new Scanner(System.in);
+		
+		Node nodeA = null;
+		
+		for(Graph graph : getListOfBusLines()) {
+			nodeA = graph.getNodeFromString(scanner.nextLine());
+			if (nodeA != null) {
+				break;
+			}
+		}
+		
+		if (nodeA == null || nodeB == null) {
+			System.out.println("ERROR : One of the stops you entered is not valid...");
+			return;
+		}
+		
+		System.out.println("\nYou want to go from " + nodeA.getName() + " to " + nodeB.getName());
 		
 		//And ask after with hours and minute with the hh:mm format (if the client sets -1)
+		System.out.print("\nDo you want to start your trip in a certain time ? Thus just type the hour and minute (eg 12:45). Else you let empty... ");
+		scanner = new Scanner(System.in);
+		
+		String hourChoice = scanner.nextLine();
+		if (hourChoice.equalsIgnoreCase("")) {
+			
+			//We must print all of the stops
+			System.out.println("\nThere are all differents times...\n");
+			getListOfBusLines().get(0).printTimeTableAToB(nodeA, nodeB);
+		
+		} else {
+			
+			if (!hourChoice.matches("[0-9][0-9]:[0-9][0-9]")) {
+				System.out.println("ERROR : The hh:mm format is incorect");
+				return;
+			}
+			
+			if (getListOfBusLines().get(0).isTheBusTravelingOnTheFirstWay(nodeA, nodeB)) {
+				System.out.println(Utils.getTImeHMFormat(nodeA.getListTimeOfStopFirstWay().get(nodeA.getClosestIdOfListOfTime(nodeA.getListTimeOfStopFirstWay(), hourChoice))));
+			} else {
+				System.out.println(Utils.getTImeHMFormat(nodeA.getListTimeOfStopSecondWay().get(nodeA.getClosestIdOfListOfTime(nodeA.getListTimeOfStopSecondWay(), hourChoice))));
+			}
+			
+		}
 		
 	}
 	
