@@ -81,7 +81,7 @@ public class Graph {
 		
 		//We first need to gather the list of stops to create the list of nodes
 		for (String str : Utils.getListOfStops(scanner)) {
-			nodes.add(new Node(nodes.size() + 1, str));
+			nodes.add(new Node(str, graph.getId()));
 		}
 		
 		//We continue to the next line because this should be a blank space
@@ -101,12 +101,12 @@ public class Graph {
 		
 		//We loop all the nodes without the last one with a variable and then create the nodes
 		for (int i = 0; i < nodes.size() - 1; i++) {
-			this.getArcListFirstWay().add(new Arc(i, nodes.get(i), nodes.get(i + 1))); 
+			this.getArcListFirstWay().add(new Arc(nodes.get(i), nodes.get(i + 1))); 
 		}
 		
 		//We loop all the nodes without the last one with a variable and then create the nodes
 		for (int i = nodes.size() - 1; i > 0; i--) {
-			this.getArcListSecondtWay().add(new Arc(i, nodes.get(i), nodes.get(i - 1))); 
+			this.getArcListSecondtWay().add(new Arc(nodes.get(i), nodes.get(i - 1))); 
 		}
 		
 		System.out.println("-------------------- All the arcs has been built --------------------");
@@ -140,6 +140,10 @@ public class Graph {
 		
 	}
 	
+	//TODO This method is not working anymore because we need to run the Dijkstra algorithm first, i'll fix this later
+	
+	/*
+	
 	//Print when a bus is leaving the A stop and arriving at the B one, only if the bus comes to the stop or quit the stop (that means the bus must pass through, in other words no dash in the time table)
 	public void printTimeTableAToB(Node A, Node B) {
 		
@@ -160,6 +164,8 @@ public class Graph {
 			}
 		}
 	}
+	
+	*/
 	
 	//Get the Node from a String, if the Node does not exist we return null, which means this Node doesn't belong to the graph
 	public Node getNodeFromString(String nodeStr) {
@@ -195,5 +201,66 @@ public class Graph {
 	}
 	
 	//Fuse all the graphs in a Graph ArrayList
+	public static Graph fuseGraphs(ArrayList<Graph> graphs) {
+		
+		Graph graphToReturn = new Graph(0);
+		
+		//First we need to gather all the stops and then fuse the same stops and add all the arcs...
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		ArrayList<Arc> arcsFW = new ArrayList<Arc>();
+		ArrayList<Arc> arcsSW = new ArrayList<Arc>();
+		//ArrayList<Arc> arcsFWV = new ArrayList<Arc>();
+		//ArrayList<Arc> arcsSWV = new ArrayList<Arc>();
+		for(Graph graph : graphs) {
+			for(Node n : graph.getNodeList()) {
+				if (!Node.nodeNameExistsInList(nodes, n.getName())) {
+					Node node = new Node(n.getName(), 0);
+					nodes.add(node);
+				}
+				
+				getNodeFromList(nodes, n.getName()).getListTimeOfStopFirstWay().put(graph.getId(), n.getListTimeOfStopFirstWay().get(graph.getId()));
+				getNodeFromList(nodes, n.getName()).getListTimeOfStopSecondWay().put(graph.getId(), n.getListTimeOfStopSecondWay().get(graph.getId()));
+				
+			}
+		}
+		
+		graphToReturn.setNodeList(nodes);
+		
+		for(Graph graph : graphs) {
+			for(Arc a : graph.getArcListFirstWay()) {
+				arcsFW.add(new Arc(graphToReturn.getNodeFromString(a.getBefore().getName()), graphToReturn.getNodeFromString(a.getAfter().getName())));
+			}
+			
+			for(Arc a : graph.getArcListSecondtWay()) {
+				arcsSW.add(new Arc(graphToReturn.getNodeFromString(a.getBefore().getName()), graphToReturn.getNodeFromString(a.getAfter().getName())));
+			}
+		}
+		
+		graphToReturn.setArcListFirstWay(arcsFW);
+		graphToReturn.setArcListSecondtWay(arcsSW);
+		
+		return graphToReturn;
+	}
+	
+	public static Node getNodeFromList(ArrayList<Node> nodes, String name) {
+		for(Node node : nodes) {
+			if (node.getName().equalsIgnoreCase(name)) {
+				return node;
+			}
+		}
+		
+		return null;
+	}
+	
+	public String[] getStopsName() {
+		ArrayList<String> stopsNames = new ArrayList<String>();
+		stopsNames.add("-----");
+		for(Node node : this.getNodeList()) {
+			stopsNames.add(node.getName().toLowerCase());
+		}
+		
+		return stopsNames.toArray(new String[0]);
+		
+	}
 	
 }

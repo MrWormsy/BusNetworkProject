@@ -2,6 +2,7 @@ package fr.mrwormsy.busnetwork.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -71,8 +72,10 @@ public class Utils {
 				}
 			}
 			
-			//When we reach here we do know that the list of time is full			
-			nodes.get(i).setListTimeOfStopFirstWay(timeStops);		
+			//When we reach here we do know that the list of time is full	
+			HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
+			hashMap.put(nodes.get(i).getBusLines().get(0), timeStops);
+			nodes.get(i).setListTimeOfStopFirstWay(hashMap);	
 			i++;
 			
 			line = scanner.nextLine();
@@ -101,7 +104,9 @@ public class Utils {
 			}
 			
 			//When we reach here we do know that the list of time is full
-			nodes.get(i).setListTimeOfStopSecondWay(timeStops);		
+			HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
+			hashMap.put(nodes.get(i).getBusLines().get(0), timeStops);
+			nodes.get(i).setListTimeOfStopSecondWay(hashMap);		
 			i--;
 			
 			line = scanner.nextLine();
@@ -133,8 +138,10 @@ public class Utils {
 				}
 			}
 			
-			//When we reach here we do know that the list of time is full			
-			nodes.get(i).setListTimeOfStopFirstWayVacations(timeStops);		
+			//When we reach here we do know that the list of time is full
+			HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
+			hashMap.put(nodes.get(i).getBusLines().get(0), timeStops);
+			nodes.get(i).setListTimeOfStopFirstWayVacations(hashMap);		
 			i++;
 			
 			line = scanner.nextLine();
@@ -163,7 +170,9 @@ public class Utils {
 			}
 			
 			//When we reach here we do know that the list of time is full
-			nodes.get(i).setListTimeOfStopSecondWayVacations(timeStops);		
+			HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap<Integer, ArrayList<Integer>>();
+			hashMap.put(nodes.get(i).getBusLines().get(0), timeStops);
+			nodes.get(i).setListTimeOfStopSecondWayVacations(hashMap);		
 			i--;
 			
 			//If we reach the end of the file we break the loop and we return
@@ -175,7 +184,6 @@ public class Utils {
 		} while (!(line.replaceAll("[ ]+", " ").equalsIgnoreCase(" ") || line.equalsIgnoreCase(""))); //While the line is not empty (End of the time table)
 		
 	}
-
 	
 }
 

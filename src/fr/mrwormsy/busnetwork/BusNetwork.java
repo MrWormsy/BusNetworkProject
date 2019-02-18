@@ -7,20 +7,23 @@ import java.util.Scanner;
 
 import com.mysql.jdbc.Connection;
 
-import fr.mrwormsy.busnetwork.arc.Arc;
+import fr.mrwormsy.busnetwork.dijkstra.DijkstraAlgorithm;
 import fr.mrwormsy.busnetwork.graph.Graph;
+import fr.mrwormsy.busnetwork.gui.Gui;
 import fr.mrwormsy.busnetwork.node.Node;
-import fr.mrwormsy.busnetwork.utils.Utils;
 
 public class BusNetwork {
 
 	private static Connection connection;
 	private static ArrayList<Graph> listOfBusLines;
+	private static Graph theGraph;
 	
 	public static void main(String[] args) {
 		
 		//First we open the SQL Stream
 		//connection = BusNewtorkSQL.connect();
+		
+		Gui gui;
 		
 		//The file
 		FileInputStream file = null;
@@ -28,7 +31,8 @@ public class BusNetwork {
 		//We init the list of bus stop to empty
 		setListOfBusLines(new ArrayList<Graph>());
 		
-		try {			
+		try {		
+			
 			//We will use a scanner which is easier to use
 			file = new FileInputStream("2_Piscine-Patinoire_Campus.txt");
 			Scanner scanner = new Scanner(file);
@@ -45,6 +49,10 @@ public class BusNetwork {
 			
 			listOfBusLines.add(graph);
 			
+			theGraph = Graph.fuseGraphs(listOfBusLines);
+			
+			gui = new Gui();
+			
 			askTheClient();
 			
 			//Close the file at the end
@@ -56,7 +64,20 @@ public class BusNetwork {
 		}
 	}
 	
+	public static Graph getTheGraph() {
+		return theGraph;
+	}
+
+	public static void setTheGraph(Graph theGraph) {
+		BusNetwork.theGraph = theGraph;
+	}
+
+	public static void setConnection(Connection connection) {
+		BusNetwork.connection = connection;
+	}
+
 	//Ask the client where he wants to go and when (optional, if this option is not set we return all the trips with the times related)
+	@SuppressWarnings("resource")
 	public static void askTheClient() {
 		
 		//First we need to display where the person wants to go
@@ -64,26 +85,14 @@ public class BusNetwork {
 		Scanner scanner = new Scanner(System.in);
 		
 		Node nodeB = null;
-		
-		for(Graph graph : getListOfBusLines()) {
-			nodeB = graph.getNodeFromString(scanner.nextLine());
-			if (nodeB != null) {
-				break;
-			}
-		}
+		nodeB = theGraph.getNodeFromString(scanner.nextLine());
 		
 		//Then from where
 		System.out.print("\nFrom Where ? ");
 		scanner = new Scanner(System.in);
 		
 		Node nodeA = null;
-		
-		for(Graph graph : getListOfBusLines()) {
-			nodeA = graph.getNodeFromString(scanner.nextLine());
-			if (nodeA != null) {
-				break;
-			}
-		}
+		nodeA = theGraph.getNodeFromString(scanner.nextLine());
 		
 		if (nodeA == null || nodeB == null) {
 			System.out.println("ERROR : One of the stops you entered is not valid...");
@@ -96,12 +105,18 @@ public class BusNetwork {
 		System.out.print("\nDo you want to start your trip in a certain time ? Thus just type the hour and minute (eg 12:45). Else you let empty... ");
 		scanner = new Scanner(System.in);
 		
+		//Informations
+		
+		/*
+		
 		String hourChoice = scanner.nextLine();
 		if (hourChoice.equalsIgnoreCase("")) {
 			
 			//We must print all of the stops
 			System.out.println("\nThere are all differents times...\n");
-			getListOfBusLines().get(0).printTimeTableAToB(nodeA, nodeB);
+			
+			//TODO UNDO THAT
+			//theGraph.printTimeTableAToB(nodeA, nodeB);
 		
 		} else {
 			
@@ -110,13 +125,36 @@ public class BusNetwork {
 				return;
 			}
 			
-			if (getListOfBusLines().get(0).isTheBusTravelingOnTheFirstWay(nodeA, nodeB)) {
+			if (theGraph.isTheBusTravelingOnTheFirstWay(nodeA, nodeB)) {
 				System.out.println(Utils.getTImeHMFormat(nodeA.getListTimeOfStopFirstWay().get(nodeA.getClosestIdOfListOfTime(nodeA.getListTimeOfStopFirstWay(), hourChoice))));
 			} else {
 				System.out.println(Utils.getTImeHMFormat(nodeA.getListTimeOfStopSecondWay().get(nodeA.getClosestIdOfListOfTime(nodeA.getListTimeOfStopSecondWay(), hourChoice))));
 			}
 			
 		}
+		
+		*/
+		
+		//Path 
+		
+		//We first need to run the Dijkstra algorithm and then do things
+		
+		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(theGraph);
+        dijkstra.execute(nodeA);
+        ArrayList<Node> path = dijkstra.getPath(nodeB);
+        
+        if (path == null) {
+			
+        	System.out.println("ERROR : You cannot reach this bus stop from " + nodeA.getName());
+        	return;
+		}
+        
+        
+        System.out.print("\nThe path will be : ");
+        for(int i = 0; i < path.size() - 1; i++) {
+        	System.out.print(path.get(i).getName() + " --> ");
+        }
+        System.out.println(path.get(path.size() - 1).getName());
 		
 	}
 	

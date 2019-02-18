@@ -6,32 +6,24 @@ public class Arc {
 
 	// === Variables ===
 	
-	//The id of the link
-	private int id;
-	
 	//The departure bus stop
 	private Node before;
 	
 	//The arriving bus stop
 	private Node after;
 	
+	//The weight
+	private int weight;
+	
 	// === Constructor ===
 	
-	public Arc(int id, Node before, Node after) {
-		this.setId(id);
+	public Arc(Node before, Node after) {
 		this.setBefore(before);
 		this.setAfter(after);
+		this.setWeight(0);
 	}
 	
 	// === Getters and Setters
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public Node getBefore() {
 		return before;
@@ -47,6 +39,14 @@ public class Arc {
 
 	public void setAfter(Node after) {
 		this.after = after;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
 	}
 	
 }

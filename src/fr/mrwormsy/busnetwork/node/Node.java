@@ -1,6 +1,7 @@
 package fr.mrwormsy.busnetwork.node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.mrwormsy.busnetwork.utils.Utils;
 
@@ -8,46 +9,37 @@ public class Node {
 
 	// === Variables ===
 	
-	//The id of the bus stop
-	private int id;
-	
 	//The name of the bus stop
 	private String name;
 	
-	//The time when the bus stopped (in minutes from 00h00) (-1 means the bus hasn't stopped yet)
-	private int timeLastStop;
+	//The list of bus lines the stop belongs to
+	private ArrayList<Integer> busLines;
 	
 	//List time of stop in one way (ascending)
-	private ArrayList<Integer> listTimeOfStopFirstWay;
+	private HashMap<Integer, ArrayList<Integer>> listTimeOfStopFirstWay;
 	
 	//List time of stop in an another way (ascending)
-	private ArrayList<Integer> listTimeOfStopSecondWay;
+	private HashMap<Integer, ArrayList<Integer>> listTimeOfStopSecondWay;
 	
 	//List time of stop in one way (ascending) (vacations)
-	private ArrayList<Integer> listTimeOfStopFirstWayVacations;
+	private HashMap<Integer, ArrayList<Integer>> listTimeOfStopFirstWayVacations;
 		
 	//List time of stop in an another way (ascending) (vacations)
-	private ArrayList<Integer> listTimeOfStopSecondWayVacations;
+	private HashMap<Integer, ArrayList<Integer>> listTimeOfStopSecondWayVacations;
 	
 	// === Constructor ===
 	
-	public Node(int id, String name) {
-		this.setId(id);
+	public Node(String name, int busLine) {
 		this.setName(name);
-		this.setTimeLastStop(-1);
+		this.setBusLines(new ArrayList<Integer>());
+		this.busLines.add(busLine);
+		this.setListTimeOfStopFirstWay(new HashMap<Integer, ArrayList<Integer>>());
+		this.setListTimeOfStopFirstWayVacations(new HashMap<Integer, ArrayList<Integer>>());
+		this.setListTimeOfStopSecondWay(new HashMap<Integer, ArrayList<Integer>>());
+		this.setListTimeOfStopSecondWayVacations(new HashMap<Integer, ArrayList<Integer>>());
 	}
 
 	// === Getters and Setters
-	
-	public int getId() {
-		return id;
-	}
-
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 
 	public String getName() {
 		return name;
@@ -58,45 +50,43 @@ public class Node {
 		this.name = name;
 	}
 
-
-	public int getTimeLastStop() {
-		return timeLastStop;
+	public ArrayList<Integer> getBusLines() {
+		return busLines;
 	}
 
-
-	public void setTimeLastStop(int timeLastStop) {
-		this.timeLastStop = timeLastStop;
+	public void setBusLines(ArrayList<Integer> busLines) {
+		this.busLines = busLines;
 	}
 
-	public ArrayList<Integer> getListTimeOfStopFirstWay() {
+	public HashMap<Integer, ArrayList<Integer>> getListTimeOfStopFirstWay() {
 		return listTimeOfStopFirstWay;
 	}
 
-	public void setListTimeOfStopFirstWay(ArrayList<Integer> listTimeOfStopFirstWay) {
+	public void setListTimeOfStopFirstWay(HashMap<Integer, ArrayList<Integer>> listTimeOfStopFirstWay) {
 		this.listTimeOfStopFirstWay = listTimeOfStopFirstWay;
 	}
 	
-	public ArrayList<Integer> getListTimeOfStopSecondWay() {
+	public HashMap<Integer, ArrayList<Integer>> getListTimeOfStopSecondWay() {
 		return listTimeOfStopSecondWay;
 	}
 
-	public void setListTimeOfStopSecondWay(ArrayList<Integer> listTimeOfStopSecondWay) {
+	public void setListTimeOfStopSecondWay(HashMap<Integer, ArrayList<Integer>> listTimeOfStopSecondWay) {
 		this.listTimeOfStopSecondWay = listTimeOfStopSecondWay;
 	}
 
-	public ArrayList<Integer> getListTimeOfStopFirstWayVacations() {
+	public HashMap<Integer, ArrayList<Integer>> getListTimeOfStopFirstWayVacations() {
 		return listTimeOfStopFirstWayVacations;
 	}
 
-	public void setListTimeOfStopFirstWayVacations(ArrayList<Integer> listTimeOfStopFirstWayVacations) {
+	public void setListTimeOfStopFirstWayVacations(HashMap<Integer, ArrayList<Integer>> listTimeOfStopFirstWayVacations) {
 		this.listTimeOfStopFirstWayVacations = listTimeOfStopFirstWayVacations;
 	}
 
-	public ArrayList<Integer> getListTimeOfStopSecondWayVacations() {
+	public HashMap<Integer, ArrayList<Integer>> getListTimeOfStopSecondWayVacations() {
 		return listTimeOfStopSecondWayVacations;
 	}
 
-	public void setListTimeOfStopSecondWayVacations(ArrayList<Integer> listTimeOfStopSecondWayVacations) {
+	public void setListTimeOfStopSecondWayVacations(HashMap<Integer, ArrayList<Integer>> listTimeOfStopSecondWayVacations) {
 		this.listTimeOfStopSecondWayVacations = listTimeOfStopSecondWayVacations;
 	}	
 	
@@ -115,6 +105,15 @@ public class Node {
 			}
 		}
 		return -1;
+	}
+
+	public static boolean nodeNameExistsInList(ArrayList<Node> nodes, String name) {
+		for(Node node : nodes ) {
+			if (node.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	
