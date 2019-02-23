@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.arc.Arc;
+import fr.mrwormsy.busnetwork.dijkstra.DijkstraAlgorithm;
 import fr.mrwormsy.busnetwork.node.Node;
 import fr.mrwormsy.busnetwork.utils.Utils;
 
@@ -261,6 +262,25 @@ public class Graph {
 		
 		return stopsNames.toArray(new String[0]);
 		
+	}
+	
+	public void findPath(Node nodeA, Node nodeB) {
+		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(this);
+        dijkstra.execute(nodeA);
+        ArrayList<Node> path = dijkstra.getPath(nodeB);
+        
+        if (path == null) {
+			
+        	System.out.println("ERROR : You cannot reach this bus stop from " + nodeA.getName());
+        	return;
+		}
+        
+        
+        System.out.print("\nThe path will be : ");
+        for(int i = 0; i < path.size() - 1; i++) {
+        	System.out.print(path.get(i).getName() + " --> ");
+        }
+        System.out.println(path.get(path.size() - 1).getName());
 	}
 	
 }

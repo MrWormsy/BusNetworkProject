@@ -5,12 +5,14 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import fr.mrwormsy.busnetwork.BusNetwork;
+import fr.mrwormsy.busnetwork.graph.Graph;
 
 public class Gui extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,7 @@ public class Gui extends JFrame implements ActionListener {
 	private static JComboBox stopsBefore;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox stopsAfter;
+	private static JButton searchButton;
 	private static JLabel stopsBeforeLabel;
 	private static JLabel stopsAfterLabel;
 	
@@ -55,12 +58,20 @@ public class Gui extends JFrame implements ActionListener {
 		stopsAfter.setBounds(((int) this.getBounds().getWidth()) - 200, 40, 150, 25);
 		stopsAfterLabel.setBounds(((int) this.getBounds().getWidth()) - 200, 15, 150, 25);
 		
+		searchButton = new JButton("Search path");
+		searchButton.setName("searchButton");
+		searchButton.addActionListener(this);
+		searchButton.setBounds(this.getWidth()/2 - 200/2, 100, 200, 30);
+		
+		
 		this.setContentPane(pan);
 		
 		pan.add(stopsBefore);
 		pan.add(stopsAfter);
 		pan.add(stopsBeforeLabel);
 		pan.add(stopsAfterLabel);
+		
+		pan.add(searchButton);
 		
 		this.setVisible(true);
 	}
@@ -101,11 +112,19 @@ public class Gui extends JFrame implements ActionListener {
 		Gui.stopsAfterLabel = stopsAfterLabel;
 	}
 
+	public static JButton getSearchButton() {
+		return searchButton;
+	}
+
+	public static void setSearchButton(JButton searchButton) {
+		Gui.searchButton = searchButton;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unused" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -114,12 +133,19 @@ public class Gui extends JFrame implements ActionListener {
 		if (source instanceof JComboBox) {
 			JComboBox comboBox = (JComboBox) source;
 			
-			System.out.println(comboBox.getName());
-			
 			if (comboBox.getName().equalsIgnoreCase(getStopsBefore().getName())) {
-				System.out.println("BEFORE --> " + comboBox.getSelectedItem());
+				BusNetwork.setStopBefore((String) comboBox.getSelectedItem());
 			} else if (comboBox.getName().equalsIgnoreCase(getStopsAfter().getName())) {
-				System.out.println("AFTER --> " + comboBox.getSelectedItem());
+				BusNetwork.setStopAfter((String) comboBox.getSelectedItem());
+			}
+		} else if (source instanceof JButton) {
+			JButton button = (JButton) source;
+			
+			if (button.getName().equalsIgnoreCase("searchButton")) {
+				if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null)) {
+					Graph theGraph = BusNetwork.getTheGraph();
+					theGraph.findPath(theGraph.getNodeFromString(BusNetwork.getStopBefore()), theGraph.getNodeFromString(BusNetwork.getStopAfter()));
+				}
 			}
 		}
 	} 

@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 import com.mysql.jdbc.Connection;
 
-import fr.mrwormsy.busnetwork.dijkstra.DijkstraAlgorithm;
 import fr.mrwormsy.busnetwork.graph.Graph;
 import fr.mrwormsy.busnetwork.gui.Gui;
 import fr.mrwormsy.busnetwork.node.Node;
@@ -18,6 +17,25 @@ public class BusNetwork {
 	private static ArrayList<Graph> listOfBusLines;
 	private static Graph theGraph;
 	
+	private static String stopBefore = null;
+	private static String stopAfter = null;
+	
+	public static String getStopBefore() {
+		return stopBefore;
+	}
+
+	public static void setStopBefore(String stopBefore) {
+		BusNetwork.stopBefore = stopBefore;
+	}
+
+	public static String getStopAfter() {
+		return stopAfter;
+	}
+
+	public static void setStopAfter(String stopAfter) {
+		BusNetwork.stopAfter = stopAfter;
+	}
+
 	public static void main(String[] args) {
 		
 		//First we open the SQL Stream
@@ -138,6 +156,7 @@ public class BusNetwork {
 		//Path 
 		
 		//We first need to run the Dijkstra algorithm and then do things
+		/*
 		
 		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(theGraph);
         dijkstra.execute(nodeA);
@@ -155,6 +174,10 @@ public class BusNetwork {
         	System.out.print(path.get(i).getName() + " --> ");
         }
         System.out.println(path.get(path.size() - 1).getName());
+		
+		*/
+		
+		theGraph.findPath(nodeA, nodeB);
 		
 	}
 	
