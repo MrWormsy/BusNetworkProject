@@ -1,7 +1,10 @@
 package fr.mrwormsy.busnetwork.graph;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import org.lwjgl.system.CallbackI.S;
 
 import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.arc.Arc;
@@ -108,10 +111,7 @@ public class Graph {
 		//We loop all the nodes without the last one with a variable and then create the nodes
 		for (int i = nodes.size() - 1; i > 0; i--) {
 			this.getArcListSecondtWay().add(new Arc(nodes.get(i), nodes.get(i - 1))); 
-		}
-		
-		System.out.println("-------------------- All the arcs has been built --------------------");
-		
+		}		
 	}
 
 	//Get the travel way of the bus, the first way or the other way
@@ -264,7 +264,7 @@ public class Graph {
 		
 	}
 	
-	public void findPath(Node nodeA, Node nodeB) {
+	public String findPath(Node nodeA, Node nodeB) {
 		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(this);
         dijkstra.execute(nodeA);
         ArrayList<Node> path = dijkstra.getPath(nodeB);
@@ -272,15 +272,44 @@ public class Graph {
         if (path == null) {
 			
         	System.out.println("ERROR : You cannot reach this bus stop from " + nodeA.getName());
-        	return;
+        	return "ERROR : You cannot reach this bus stop from " + nodeA.getName();
 		}
         
+        String string = "";
         
         System.out.print("\nThe path will be : ");
+        string = string.concat("The path will be : ");
         for(int i = 0; i < path.size() - 1; i++) {
         	System.out.print(path.get(i).getName() + " --> ");
+        	string = string.concat(path.get(i).getName() + " --> ");
         }
+        
+        string = string.concat(path.get(path.size() - 1).getName());
         System.out.println(path.get(path.size() - 1).getName());
+        
+        return string;
 	}
+	
+	//We try to get the average time bewteen two nodes (arcs) to set this to the weight of the arc
+	public int getAverageTimeBetweenTwoNodes(Arc arc) {
+		Node nodeA = arc.getBefore();
+		Node nodeB = arc.getAfter();
+		
+		int time = 0;
+		int nbOfTimes = nodeA.getListTimeOfStopFirstWay().size();
+		
+		for(int i = 0; i < nbOfTimes - 1; i++) {
+			time += nodeB.getListTimeOfStopFirstWay().get(0).get(i) - nodeA.getListTimeOfStopFirstWay().get(0).get(i);
+		}	
+		
+		return (int) time/nbOfTimes;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 }

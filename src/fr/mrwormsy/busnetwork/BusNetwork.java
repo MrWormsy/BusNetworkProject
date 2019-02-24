@@ -67,11 +67,27 @@ public class BusNetwork {
 			
 			listOfBusLines.add(graph);
 			
+			//We will use a scanner which is easier to use
+			file = new FileInputStream("3_Test.txt");
+			scanner = new Scanner(file);
+			graph = Graph.getGraphFromFile(scanner);
+			graph.buildArcs();
+			
+			listOfBusLines.add(graph);
+			
+			//We will use a scanner which is easier to use
+			file = new FileInputStream("4_Test2.txt");
+			scanner = new Scanner(file);
+			graph = Graph.getGraphFromFile(scanner);
+			graph.buildArcs();
+			
+			listOfBusLines.add(graph);
+			
 			theGraph = Graph.fuseGraphs(listOfBusLines);
 			
 			gui = new Gui();
 			
-			askTheClient();
+			//askTheClient();
 			
 			//Close the file at the end
 			if (file != null) {

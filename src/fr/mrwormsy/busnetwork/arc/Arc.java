@@ -23,7 +23,7 @@ public class Arc {
 		this.setWeight(0);
 	}
 	
-	// === Getters and Setters
+	// === Getters and Setters ===
 
 	public Node getBefore() {
 		return before;
@@ -49,4 +49,5 @@ public class Arc {
 		this.weight = weight;
 	}
 	
+	// == Methods ==
 }
