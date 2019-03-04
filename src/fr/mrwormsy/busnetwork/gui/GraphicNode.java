@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 
@@ -13,7 +14,7 @@ public class GraphicNode {
 	 private String name;
 	 private JLabel label;
 
-	    public int getX() {
+	public int getX() {
 		return x;
 	}
 
@@ -61,13 +62,21 @@ public class GraphicNode {
 		this.label = label;
 	}
 
-		public GraphicNode(int x, int y, String name) {
-	        this.x = x;
-	        this.y = y;
-	        this.name = name;
-	        this.label = new JLabel(name);
-	        this.label.setBounds(x - 40, y - 20, 80, 20);
-	    }
+	public GraphicNode(int x, int y, String name) {
+		this.x = x;
+		this.y = y;
+		this.name = name;
+		this.label = new JLabel(name);
+		this.label.setBounds(x - 40, y - 20, 80, 20);
+	}
+	
+	public GraphicNode(String name) {
+		this.x = 0;
+		this.y = 0;
+		this.name = name;
+		this.label = new JLabel(name);
+		this.label.setBounds(0, 0, 80, 20);
+	}
 	
     public void draw(Graphics g, boolean visiting) {
         Graphics2D g2d = (Graphics2D) g;
@@ -81,5 +90,15 @@ public class GraphicNode {
         
         g2d.fill(circle);
     }
-	
+
+	public static GraphicNode getGraphicNodeInCommon(ArrayList<GraphicNode> arrayList, ArrayList<GraphicNode> arrayList2) {
+		for(GraphicNode gNode1 : arrayList) {
+			for(GraphicNode gNode2 : arrayList2) {
+				if (gNode1.getName().equalsIgnoreCase(gNode2.getName())) {
+					return gNode2;
+				}
+			}
+		}
+		return null;
+	}
 }

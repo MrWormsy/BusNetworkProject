@@ -20,6 +20,8 @@ public class BusNetwork {
 	private static String stopBefore = null;
 	private static String stopAfter = null;
 	
+	private static String departTime = null;
+	
 	public static String getStopBefore() {
 		return stopBefore;
 	}
@@ -32,10 +34,21 @@ public class BusNetwork {
 		return stopAfter;
 	}
 
+	public static String getDepartTime() {
+		return departTime;
+	}
+
+	public static void setDepartTime(String departTime) {
+		BusNetwork.departTime = departTime;
+	}
+
 	public static void setStopAfter(String stopAfter) {
 		BusNetwork.stopAfter = stopAfter;
 	}
 
+	
+	//TODO BE CAREFULL THAT WE CAN WAIT AT A STOP
+	
 	public static void main(String[] args) {
 		
 		//First we open the SQL Stream

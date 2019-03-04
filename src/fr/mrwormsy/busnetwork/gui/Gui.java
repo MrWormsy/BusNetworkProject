@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -19,6 +20,7 @@ import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.graph.Graph;
 import fr.mrwormsy.busnetwork.node.Node;
 
+
 public class Gui extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
@@ -28,6 +30,9 @@ public class Gui extends JFrame implements ActionListener {
 	private static JComboBox stopsBefore;
 	@SuppressWarnings("rawtypes")
 	private static JComboBox stopsAfter;
+	@SuppressWarnings("rawtypes")
+	private static JComboBox times;
+	
 	private static JButton searchButton;
 	private static JLabel stopsBeforeLabel;
 	private static JLabel stopsAfterLabel;
@@ -48,6 +53,16 @@ public class Gui extends JFrame implements ActionListener {
 
 	public static void setPathString(JLabel pathString) {
 		Gui.pathString = pathString;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static JComboBox getTimes() {
+		return times;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setTimes(JComboBox times) {
+		Gui.times = times;
 	}
 
 	public static ArrayList<Object> shapes;
@@ -98,6 +113,19 @@ public class Gui extends JFrame implements ActionListener {
 		stopsAfter.setBounds(((int) this.getBounds().getWidth()) - 200, 40, 150, 25);
 		stopsAfterLabel.setBounds(((int) this.getBounds().getWidth()) - 200, 15, 150, 25);
 		
+		
+		times = new JComboBox();
+		times.addItem("Depart time");
+		for(int i = 0; i < 24; i++) {
+			for(int j = 0; j < 60; j+=5) {
+				times.addItem(String.format("%02d", i) + ":" + String.format("%02d", j));
+			}
+		}
+		times.setSelectedIndex(0);
+		times.setName("times");
+		times.addActionListener(this);
+		times.setBounds(this.getWidth()/2 - 200/2, 50, 200, 30);
+		
 		searchButton = new JButton("Search path");
 		searchButton.setName("searchButton");
 		searchButton.addActionListener(this);
@@ -108,6 +136,8 @@ public class Gui extends JFrame implements ActionListener {
 		pan.add(stopsAfter);
 		pan.add(stopsBeforeLabel);
 		pan.add(stopsAfterLabel);
+		
+		pan.add(times);
 		
 		pan.add(searchButton);
 		
@@ -197,12 +227,14 @@ public class Gui extends JFrame implements ActionListener {
 				BusNetwork.setStopBefore((String) comboBox.getSelectedItem());
 			} else if (comboBox.getName().equalsIgnoreCase(getStopsAfter().getName())) {
 				BusNetwork.setStopAfter((String) comboBox.getSelectedItem());
+			} else if (comboBox.getName().equalsIgnoreCase(getTimes().getName())) {
+				BusNetwork.setDepartTime((String) comboBox.getSelectedItem());
 			}
 		} else if (source instanceof JButton) {
 			JButton button = (JButton) source;
 			
 			if (button.getName().equalsIgnoreCase("searchButton")) {
-				if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null)) {
+				if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null || BusNetwork.getDepartTime() == null)) {
 					Graph theGraph = BusNetwork.getTheGraph();
 					//theGraph.findPath(theGraph.getNodeFromString(BusNetwork.getStopBefore()), theGraph.getNodeFromString(BusNetwork.getStopAfter()));
 					this.displayPath(theGraph.getNodeFromString(BusNetwork.getStopBefore()), theGraph.getNodeFromString(BusNetwork.getStopAfter()));
@@ -238,12 +270,14 @@ class GPanel extends JPanel {
         }
         
         if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null)) {
-			this.drawGraph(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
+        	this.drawGraph(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
 		} else {
 			this.drawGraph(g, null);
+			//this.drawFormatedGraph(g, null);
 		}
     }
     
+    //Draws the graph without being formated by the bus line
 	public void drawGraph(Graphics g, List<String> stopsList) {
     	Graph theGraph = BusNetwork.getTheGraph();
 		
@@ -293,6 +327,64 @@ class GPanel extends JPanel {
 			x += ((this.getWidth() - 100) / 10);
 			count++;
 		}  
+	}
+	
+	//TODO TOO HARD FOR NOW
+	
+	//Draw the graph according to the bus lines. We first draw the first bus line as a line, then we draw the second one in order to put the connection if it exists (with a certain rotation)
+	public void drawFormatedGraph(Graphics g, List<String> stopsList) {
+		
+		Graph theGraph = BusNetwork.getTheGraph();
+		
+		HashMap<Integer, ArrayList<GraphicNode>> hashMapGraphicNodes = new HashMap<Integer, ArrayList<GraphicNode>>();
+		
+		//We first need to draw the first bus line in a line (no rotation)
+		
+		//We want to split the graph in n graphs which are straight
+		for(Node node : theGraph.getNodeList()) {
+			for(Integer i : node.getBusLines()) {				
+				if (hashMapGraphicNodes.containsKey(i)) {
+					hashMapGraphicNodes.get(i).add(new GraphicNode(node.getName()));
+				} else {
+					hashMapGraphicNodes.put(i, new ArrayList<GraphicNode>());
+					hashMapGraphicNodes.get(i).add(new GraphicNode(node.getName()));
+				}				
+			}
+		}
+			
+		//Now as our hash map is built, we must choose one line (the first one for instance, and draw it, with a y which is the middle of the window).			
+		int x = 50;
+		int y = 450;
+		
+		int maxSize = hashMapGraphicNodes.get(1).size();
+			
+		for(GraphicNode graphicNode : hashMapGraphicNodes.get(1)) {
+			graphicNode.setX(x);
+			graphicNode.setY(y);
+			
+			graphicNode.draw(g, false);
+			graphicNode.getLabel().setBounds(x - 40, y - 20, 80, 20);
+			this.add(graphicNode.getLabel());
+			
+			x += ((this.getWidth() - 50) / maxSize);
+		}
+		
+		//If there is only one graph we have finished
+		if (hashMapGraphicNodes.size() == 1) {
+			return;
+		}
+		
+		int count = 1;
+		
+		x = -1;
+		y = -1;
+		
+		for(int i = 2; i < hashMapGraphicNodes.size(); i++) {
+			//We first need to get the node in common
+			GraphicNode gNodeInCommon = GraphicNode.getGraphicNodeInCommon(hashMapGraphicNodes.get(i - 1), hashMapGraphicNodes.get(i));
+			
+		}
+		
 	}
 	
 	public List<String> getArrayListStopsFromPathString(String string) {		

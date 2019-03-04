@@ -216,14 +216,16 @@ public class Graph {
 					nodes.add(node);
 				}
 				
+				getNodeFromList(nodes, n.getName()).getBusLines().add(n.getBusLines().get(0));
 				getNodeFromList(nodes, n.getName()).getListTimeOfStopFirstWay().put(graph.getId(), n.getListTimeOfStopFirstWay().get(graph.getId()));
 				getNodeFromList(nodes, n.getName()).getListTimeOfStopSecondWay().put(graph.getId(), n.getListTimeOfStopSecondWay().get(graph.getId()));
 				
 			}
-		}
+		}	
 		
 		graphToReturn.setNodeList(nodes);
 		
+		//Here we are dealing with the arcs
 		for(Graph graph : graphs) {
 			for(Arc a : graph.getArcListFirstWay()) {
 				arcsFW.add(new Arc(graphToReturn.getNodeFromString(a.getBefore().getName()), graphToReturn.getNodeFromString(a.getAfter().getName())));
@@ -236,6 +238,8 @@ public class Graph {
 		
 		graphToReturn.setArcListFirstWay(arcsFW);
 		graphToReturn.setArcListSecondtWay(arcsSW);
+		
+		//graphToReturn.calculateAverageTimeOfArcs();
 		
 		return graphToReturn;
 	}
@@ -302,9 +306,35 @@ public class Graph {
 	}
 	
 	
+	public void calculateAverageTimeOfArcs() {
+		for(Arc arc : this.getArcListFirstWay()) {
+			arc.setWeight(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
+			System.out.println(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
+		}
+	}
 	
-	
-	
+	public int averageTimeBewteenTwoNodes(Node A, Node B) {
+		
+		int count = 0;
+		int total = 0;
+		
+		for(Integer i : A.getListTimeOfStopFirstWay().keySet()) {
+			if (B.getListTimeOfStopFirstWay().containsKey(i)) {
+				for(int j = 0; (j < A.getListTimeOfStopFirstWay().get(i).size()); j++) {				
+					//for(Integer j : A.getListTimeOfStopFirstWay().get(i)) {
+					if (!(A.getListTimeOfStopFirstWay().get(i).get(j) == -1 || B.getListTimeOfStopFirstWay().get(i).get(j) == -1)) {
+						total += (B.getListTimeOfStopFirstWay().get(i).get(j) - A.getListTimeOfStopFirstWay().get(i).get(j));
+						count++;
+					}
+				}
+			}
+		}
+		
+		if (count == 0) {
+			return 0;
+		}
+		return (int) (total/count);
+	}
 	
 	
 	
