@@ -41,6 +41,7 @@ public class BusNetwork {
 		//First we open the SQL Stream
 		//connection = BusNewtorkSQL.connect();
 		
+		@SuppressWarnings("unused")
 		Gui gui;
 		
 		//The file

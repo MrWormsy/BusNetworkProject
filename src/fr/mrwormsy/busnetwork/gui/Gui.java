@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,12 +34,32 @@ public class Gui extends JFrame implements ActionListener {
 	
 	private static JLabel pathString;
 	
+	public JPanel getPan() {
+		return pan;
+	}
+
+	public void setPan(JPanel pan) {
+		this.pan = pan;
+	}
+
+	public static JLabel getPathString() {
+		return pathString;
+	}
+
+	public static void setPathString(JLabel pathString) {
+		Gui.pathString = pathString;
+	}
+
 	public static ArrayList<Object> shapes;
+	
+	private static ArrayList<GraphicNode> gNodesList;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Gui() {   
 		
 		setShapes(new ArrayList<Object>());
+		
+		setgNodesList(new ArrayList<GraphicNode>());
 		
 		this.setTitle("Projet SIBRA");
 		this.setSize(1200, 900);
@@ -49,7 +71,7 @@ public class Gui extends JFrame implements ActionListener {
 		this.setBackground(Color.PINK);
 		
 		pathString = new JLabel("");
-		pathString.setBounds(50, 300, this.getWidth() - 150, 200);
+		pathString.setBounds(50, 600, this.getWidth() - 150, 200);
 		
 		pan = new GPanel();
 		pan.setPreferredSize(this.getMaximumSize());
@@ -57,7 +79,6 @@ public class Gui extends JFrame implements ActionListener {
 		pan.setBackground(Color.PINK);    
 		pan.setLayout(null);
 		
-		//String[] petStrings = { "---", "Bird", "Cat", "Dog", "Rabbit", "Pig" };
 		String[] stopsList = BusNetwork.getTheGraph().getStopsName();
 
 		stopsBefore = new JComboBox(stopsList);
@@ -155,6 +176,14 @@ public class Gui extends JFrame implements ActionListener {
 		return serialVersionUID;
 	}
 
+	public static ArrayList<GraphicNode> getgNodesList() {
+		return gNodesList;
+	}
+
+	public static void setgNodesList(ArrayList<GraphicNode> gNodesList) {
+		Gui.gNodesList = gNodesList;
+	}
+
 	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -177,23 +206,15 @@ public class Gui extends JFrame implements ActionListener {
 					Graph theGraph = BusNetwork.getTheGraph();
 					//theGraph.findPath(theGraph.getNodeFromString(BusNetwork.getStopBefore()), theGraph.getNodeFromString(BusNetwork.getStopAfter()));
 					this.displayPath(theGraph.getNodeFromString(BusNetwork.getStopBefore()), theGraph.getNodeFromString(BusNetwork.getStopAfter()));
+
+					this.repaint();
 				}
 			}
 		}
 	}
 	
-	public void drawGraph() {
-		
-		
-	}
-	
-	public void drawPath(Node nodeA, Node nodeB) {
-		
-		
-	}
-	
 	public void displayPath(Node nodeA, Node nodeB) {
-		pathString.setText("<html>" + BusNetwork.getTheGraph().findPath(nodeA, nodeB) + "</html>");
+		pathString.setText("<html>" + "The path will be : " + BusNetwork.getTheGraph().findPath(nodeA, nodeB) + "</html>");
 	}
 }
 
@@ -210,34 +231,83 @@ class GPanel extends JPanel {
     	super.paintComponent(g);
         for (Object s : Gui.shapes) {
             if (s instanceof GraphicNode) {
-                ((GraphicNode) s).draw(g);
+                ((GraphicNode) s).draw(g, false);
             } else if (s instanceof GraphicArc) {
                 ((GraphicArc) s).draw(g);
             }
         }
-    	
-        /*
         
+        if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null)) {
+			this.drawGraph(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
+		} else {
+			this.drawGraph(g, null);
+		}
+    }
+    
+	public void drawGraph(Graphics g, List<String> stopsList) {
     	Graph theGraph = BusNetwork.getTheGraph();
 		
 		//We can draw only y = between 150 and the max height - 50 and x = 50 and the max weight - 50
 		int maxLineLengh = theGraph.getNodeList().size();
 		
 		int x = 50;
+		int y = 300;
+		int count = 0;
+		
+		int xx = -1;
+		int yy = -1;
 		
 		GraphicNode gNode;
 		
 		for(int i = 0; i < maxLineLengh; i++) {
 			
-			gNode = new GraphicNode(x, 300);
-			gNode.draw(g);
+			if (count >= 10) {
+				y += 100;
+				x = 50;
+				count = 0;
+			}
 			
-			//g.drawOval(x, 300, 10, 10);
+			gNode = new GraphicNode(x, y, theGraph.getNodeList().get(i).getName().toLowerCase());
 			
-			x += ((this.getWidth() - 100) / maxLineLengh);
+			if (stopsList != null) {
+				if (containsStopString(stopsList, gNode.getName())) {
+					gNode.draw(g, true);
+					
+					if (xx != -1 && yy != -1) {
+						g.drawLine(xx, yy, x + 5, y + 5);
+					}
+					
+					xx = x + 5;
+					yy = y + 5;
+					
+				} else {
+					gNode.draw(g, false);
+				}
+			} else {
+				gNode.draw(g, false);
+			}
+			
+			
+			this.add(gNode.getLabel());
+			
+			x += ((this.getWidth() - 100) / 10);
+			count++;
+		}  
+	}
+	
+	public List<String> getArrayListStopsFromPathString(String string) {		
+		String theString = string.replaceAll("[ ]+", "");		
+		return Arrays.asList(theString.split("(-->)"));
+		
+	}
+	
+	public boolean containsStopString(List<String> list, String string) {
+		for(String s : list) {
+			if (s.equalsIgnoreCase(string)) {
+				return true;
+			}
 		}
 		
-		*/
-    	
-    }
+		return false;
+	}
 }

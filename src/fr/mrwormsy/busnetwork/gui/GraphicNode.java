@@ -5,20 +5,80 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
+import javax.swing.JLabel;
+
 public class GraphicNode {
 
-	 int x, y, width, height;
+	 private int x, y, width, height;
+	 private String name;
+	 private JLabel label;
 
-	    public GraphicNode(int x, int y) {
+	    public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public JLabel getLabel() {
+		return label;
+	}
+
+	public void setLabel(JLabel label) {
+		this.label = label;
+	}
+
+		public GraphicNode(int x, int y, String name) {
 	        this.x = x;
 	        this.y = y;
+	        this.name = name;
+	        this.label = new JLabel(name);
+	        this.label.setBounds(x - 40, y - 20, 80, 20);
 	    }
 	
-    public void draw(Graphics g) {
+    public void draw(Graphics g, boolean visiting) {
         Graphics2D g2d = (Graphics2D) g;
         Ellipse2D.Double circle = new Ellipse2D.Double(x, y, 10, 10);
 
-        g2d.setColor(Color.GRAY);
+        if (visiting) {
+        	g2d.setColor(Color.RED);
+		} else {
+			g2d.setColor(Color.GRAY);
+		}
+        
         g2d.fill(circle);
     }
 	

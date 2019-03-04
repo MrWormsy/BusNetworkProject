@@ -1,10 +1,7 @@
 package fr.mrwormsy.busnetwork.graph;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import org.lwjgl.system.CallbackI.S;
 
 import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.arc.Arc;
@@ -277,15 +274,14 @@ public class Graph {
         
         String string = "";
         
-        System.out.print("\nThe path will be : ");
-        string = string.concat("The path will be : ");
+        //System.out.print("\nThe path will be : ");
         for(int i = 0; i < path.size() - 1; i++) {
-        	System.out.print(path.get(i).getName() + " --> ");
+        	//System.out.print(path.get(i).getName() + " --> ");
         	string = string.concat(path.get(i).getName() + " --> ");
         }
         
         string = string.concat(path.get(path.size() - 1).getName());
-        System.out.println(path.get(path.size() - 1).getName());
+        //System.out.println(path.get(path.size() - 1).getName());
         
         return string;
 	}
