@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.arc.Arc;
 import fr.mrwormsy.busnetwork.graph.Graph;
 import fr.mrwormsy.busnetwork.node.Node;
@@ -56,7 +57,34 @@ public class DijkstraAlgorithm {
         }
 
     }
+    
+    private int getDistance(Node node, Node target) {
+        for (Arc arc : Arcs) {
+            if (arc.getBefore().equals(node) && arc.getAfter().equals(target)) {
+            	
+            	/*
+            	
+            	if (BusNetwork.getDepartTime() != null) {
+            		int commonLine = node.getCommonBusLine(target);
+            		int idOfTheClosestTimeOfStop = node.getClosestIdOfListOfTime(BusNetwork.getCurrentTime(), commonLine);
+            		
+            		
+            		arc.setWeight(target.getListTimeOfStopFirstWay().get(commonLine).get(idOfTheClosestTimeOfStop) - node.getListTimeOfStopFirstWay().get(commonLine).get(idOfTheClosestTimeOfStop));            		
+            		
+				}
+            	
+            	System.out.println(arc.getWeight());
+            	
+            	*/
+            	
+                return arc.getWeight();
+            }
+        }
+        throw new RuntimeException("Should not happen");
+    }
 
+    /*
+    
     private int getDistance(Node node, Node target) {
         for (Arc Arc : Arcs) {
             if (Arc.getBefore().equals(node)
@@ -66,6 +94,8 @@ public class DijkstraAlgorithm {
         }
         throw new RuntimeException("Should not happen");
     }
+    
+    */
 
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<Node>();

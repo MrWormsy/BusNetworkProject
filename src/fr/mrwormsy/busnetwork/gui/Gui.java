@@ -3,6 +3,7 @@ package fr.mrwormsy.busnetwork.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javax.swing.JPanel;
 import fr.mrwormsy.busnetwork.BusNetwork;
 import fr.mrwormsy.busnetwork.graph.Graph;
 import fr.mrwormsy.busnetwork.node.Node;
+import fr.mrwormsy.busnetwork.utils.Utils;
 
 
 public class Gui extends JFrame implements ActionListener {
@@ -77,7 +79,7 @@ public class Gui extends JFrame implements ActionListener {
 		setgNodesList(new ArrayList<GraphicNode>());
 		
 		this.setTitle("Projet SIBRA");
-		this.setSize(1200, 900);
+		this.setSize(1500, 1100);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);		
 		    
@@ -86,7 +88,7 @@ public class Gui extends JFrame implements ActionListener {
 		this.setBackground(Color.PINK);
 		
 		pathString = new JLabel("");
-		pathString.setBounds(50, 600, this.getWidth() - 150, 200);
+		pathString.setBounds(50, 850, this.getWidth() - 150, 200);
 		
 		pan = new GPanel();
 		pan.setPreferredSize(this.getMaximumSize());
@@ -224,12 +226,21 @@ public class Gui extends JFrame implements ActionListener {
 			JComboBox comboBox = (JComboBox) source;
 			
 			if (comboBox.getName().equalsIgnoreCase(getStopsBefore().getName())) {
-				BusNetwork.setStopBefore((String) comboBox.getSelectedItem());
+				if (comboBox.getSelectedIndex() != 0) {
+					BusNetwork.setStopBefore((String) comboBox.getSelectedItem());
+				}
 			} else if (comboBox.getName().equalsIgnoreCase(getStopsAfter().getName())) {
-				BusNetwork.setStopAfter((String) comboBox.getSelectedItem());
+				if (comboBox.getSelectedIndex() != 0) {
+					BusNetwork.setStopAfter((String) comboBox.getSelectedItem());
+				}
 			} else if (comboBox.getName().equalsIgnoreCase(getTimes().getName())) {
-				BusNetwork.setDepartTime((String) comboBox.getSelectedItem());
+				
+				if (comboBox.getSelectedIndex() != 0) {
+					BusNetwork.setDepartTime((String) comboBox.getSelectedItem());
+					BusNetwork.setCurrentTime(Utils.getTimeFromStringFormat((String) comboBox.getSelectedItem()));
+				}
 			}
+			
 		} else if (source instanceof JButton) {
 			JButton button = (JButton) source;
 			
@@ -269,13 +280,68 @@ class GPanel extends JPanel {
             }
         }
         
-        if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null)) {
-        	this.drawGraph(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
+        if (!(BusNetwork.getStopAfter() == null || BusNetwork.getStopBefore() == null || BusNetwork.getDepartTime() == null)) {
+        	//this.drawGraph(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
+        	this.drawGraphCircular(g, getArrayListStopsFromPathString(BusNetwork.getTheGraph().findPath(BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopBefore()), BusNetwork.getTheGraph().getNodeFromString(BusNetwork.getStopAfter()))));
 		} else {
-			this.drawGraph(g, null);
+			//this.drawGraph(g, null);
+			this.drawGraphCircular(g, null);
 			//this.drawFormatedGraph(g, null);
 		}
     }
+    
+    public void drawGraphCircular(Graphics g, List<String> stopsList) {
+    	Graph theGraph = BusNetwork.getTheGraph();
+		
+    	int centerX = this.getWidth()/2;
+    	int centerY = this.getHeight()/2;
+    	
+    	int radius = 375;
+    	
+		//We can draw only y = between 150 and the max height - 50 and x = 50 and the max weight - 50
+		int nbOfStops = theGraph.getNodeList().size();
+    	
+		GraphicNode gNode;
+		
+		int xx = -1;
+		int yy = -1;
+		
+		int x, y;
+		
+		double increment = (2 * Math.PI) / nbOfStops;
+		ArrayList<Point> locations = new ArrayList<Point>();
+		for(int i = 0;i < nbOfStops; i++) {
+			double angle = i * increment;
+			x = (int) (centerX + (radius * Math.cos(angle)));
+			y = (int) (centerY + (radius * Math.sin(angle)));
+			
+			
+			
+			gNode = new GraphicNode(x, y, theGraph.getNodeList().get(i).getName().toLowerCase() + theGraph.getNodeList().get(i).getFormatedBusLines());
+			
+			if (stopsList != null) {
+				if (containsStopString(stopsList, gNode.getName().replaceAll("[ ]*[\\(]([0-9]*[,]?[0-9]*)*[\\)]", ""))) {
+					gNode.draw(g, true);
+					
+					if (xx != -1 && yy != -1) {
+						g.drawLine(xx, yy, x + 5, y + 5);
+					}
+					
+					xx = x + 5;
+					yy = y + 5;
+					
+				} else {
+					gNode.draw(g, false);
+				}
+			} else {
+				gNode.draw(g, false);
+			}
+			
+			
+			this.add(gNode.getLabel());
+			locations.add(new Point(x, y));
+		}  
+	}
     
     //Draws the graph without being formated by the bus line
 	public void drawGraph(Graphics g, List<String> stopsList) {
@@ -288,6 +354,8 @@ class GPanel extends JPanel {
 		int y = 300;
 		int count = 0;
 		
+		int maxPerLine = 8;
+		
 		int xx = -1;
 		int yy = -1;
 		
@@ -295,8 +363,8 @@ class GPanel extends JPanel {
 		
 		for(int i = 0; i < maxLineLengh; i++) {
 			
-			if (count >= 10) {
-				y += 100;
+			if (count >= maxPerLine) {
+				y += 75;
 				x = 50;
 				count = 0;
 			}
@@ -324,7 +392,7 @@ class GPanel extends JPanel {
 			
 			this.add(gNode.getLabel());
 			
-			x += ((this.getWidth() - 100) / 10);
+			x += ((this.getWidth()) / maxPerLine);
 			count++;
 		}  
 	}
@@ -388,7 +456,7 @@ class GPanel extends JPanel {
 	}
 	
 	public List<String> getArrayListStopsFromPathString(String string) {		
-		String theString = string.replaceAll("[ ]+", "");		
+		String theString = string.replaceAll("[ ]+", "").replaceAll("(\\([0-9]*\\))", "");		
 		return Arrays.asList(theString.split("(-->)"));
 		
 	}

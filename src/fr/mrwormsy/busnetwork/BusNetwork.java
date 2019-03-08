@@ -21,7 +21,16 @@ public class BusNetwork {
 	private static String stopAfter = null;
 	
 	private static String departTime = null;
+	private static int currentTime = 0;
 	
+	public static int getCurrentTime() {
+		return currentTime;
+	}
+
+	public static void setCurrentTime(int timeOfDepart) {
+		BusNetwork.currentTime = timeOfDepart;
+	}
+
 	public static String getStopBefore() {
 		return stopBefore;
 	}

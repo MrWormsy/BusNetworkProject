@@ -67,7 +67,7 @@ public class GraphicNode {
 		this.y = y;
 		this.name = name;
 		this.label = new JLabel(name);
-		this.label.setBounds(x - 40, y - 20, 80, 20);
+		this.label.setBounds(x - (int) (this.label.getPreferredSize().getWidth() / 2), y - (int) (this.label.getPreferredSize().getHeight() / 2) - 10, (int) this.label.getPreferredSize().getWidth(), (int) this.label.getPreferredSize().getHeight());
 	}
 	
 	public GraphicNode(String name) {

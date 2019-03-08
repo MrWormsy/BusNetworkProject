@@ -281,10 +281,10 @@ public class Graph {
         //System.out.print("\nThe path will be : ");
         for(int i = 0; i < path.size() - 1; i++) {
         	//System.out.print(path.get(i).getName() + " --> ");
-        	string = string.concat(path.get(i).getName() + " --> ");
+        	string = string.concat(path.get(i).getName() + " (" + String.valueOf(path.get(i).getBusLines().get(1)) + ") " + " --> ");
         }
         
-        string = string.concat(path.get(path.size() - 1).getName());
+        string = string.concat(path.get(path.size() - 1).getName() + " (" + String.valueOf(path.get(path.size() - 1).getBusLines().get(1)) + ")");
         //System.out.println(path.get(path.size() - 1).getName());
         
         return string;
@@ -308,6 +308,11 @@ public class Graph {
 	
 	public void calculateAverageTimeOfArcs() {
 		for(Arc arc : this.getArcListFirstWay()) {
+			arc.setWeight(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
+			System.out.println(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
+		}
+		
+		for(Arc arc : this.getArcListSecondtWay()) {
 			arc.setWeight(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
 			System.out.println(this.averageTimeBewteenTwoNodes(arc.getBefore(), arc.getAfter()));
 		}

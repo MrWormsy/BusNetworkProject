@@ -3,8 +3,6 @@ package fr.mrwormsy.busnetwork.node;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import fr.mrwormsy.busnetwork.utils.Utils;
-
 public class Node {
 
 	// === Variables ===
@@ -90,6 +88,8 @@ public class Node {
 		this.listTimeOfStopSecondWayVacations = listTimeOfStopSecondWayVacations;
 	}	
 	
+	/*
+	
 	//Get id of the closest time of a specific listOfTimeOfStop (the next one), returns -1 if the last bus has already left the stop and there is no other time
 	public int getClosestIdOfListOfTime(ArrayList<Integer> arrayListOfStop, String hhmmFormat) {
 		
@@ -106,6 +106,8 @@ public class Node {
 		}
 		return -1;
 	}
+	
+	*/
 
 	public static boolean nodeNameExistsInList(ArrayList<Node> nodes, String name) {
 		for(Node node : nodes ) {
@@ -115,7 +117,55 @@ public class Node {
 		}
 		return false;
 	}
+
+	public int getCommonBusLine(Node target) {
+		
+		for(Integer i : target.getBusLines()) {
+			if (target.getBusLines().contains(i) && i != 0) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	
-	
-	
+	public int getClosestIdOfListOfTime(int time, int busLineId) {
+		int id = 0;
+		int lastTime = -1;
+		
+		if (this.getListTimeOfStopFirstWay().get(busLineId) == null) {
+			return 0;
+		}
+		
+		for(Integer i : this.getListTimeOfStopFirstWay().get(busLineId)) {
+			
+			if (lastTime != -1) {
+				if (time <= i && time > lastTime) {
+					return id;
+				}
+			}
+			
+			lastTime = i;
+			
+			id++;
+		}
+		
+		return 0;
+	}
+
+	public String getFormatedBusLines() {
+		
+		String strToReturn = " (";
+		
+		for(int i = 1; i < this.getBusLines().size(); i++) {
+			strToReturn = strToReturn.concat(String.valueOf(this.getBusLines().get(i)));
+			
+			if (i + 1 != this.getBusLines().size()) {
+				strToReturn = strToReturn.concat(",");
+			}
+		}
+		
+		strToReturn = strToReturn.concat(")");
+		
+		return strToReturn;
+	}
 }
