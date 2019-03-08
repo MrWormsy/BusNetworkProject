@@ -110,60 +110,6 @@ public class Graph {
 			this.getArcListSecondtWay().add(new Arc(nodes.get(i), nodes.get(i - 1))); 
 		}		
 	}
-
-	//Get the travel way of the bus, the first way or the other way
-	public boolean isTheBusTravelingOnTheFirstWay(Node A, Node B) {
-		//If the stops exists we want to check in which way the bus will travel (one way or the second way)
-		int distanceOneWay = this.getDistanceBetweenTwoNodes(getArcListFirstWay(), A, B);
-		int distanceSecondWay = this.getDistanceBetweenTwoNodes(getArcListSecondtWay(), A, B);
-				
-		if (distanceOneWay >= distanceSecondWay) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	//Travel from point A to point B (with a single graph for the moment)
-	public void travelFromAToB(Node A, Node B, String hhmmFormat) {		
-		
-		//Shortest --> Print the shortest path in term of arcs from a certain time
-		
-		
-		
-		//Fastest
-		
-		
-		//Foremost
-		
-	}
-	
-	//TODO This method is not working anymore because we need to run the Dijkstra algorithm first, i'll fix this later
-	
-	/*
-	
-	//Print when a bus is leaving the A stop and arriving at the B one, only if the bus comes to the stop or quit the stop (that means the bus must pass through, in other words no dash in the time table)
-	public void printTimeTableAToB(Node A, Node B) {
-		
-		//First get the way
-		boolean firstWay = this.isTheBusTravelingOnTheFirstWay(A, B);
-		
-		if (firstWay) {
-			for(int i = 0; i < A.getListTimeOfStopFirstWay().size(); i++) {
-				if (!(A.getListTimeOfStopFirstWay().get(i) == -1 || B.getListTimeOfStopFirstWay().get(i) == -1)) {
-					System.out.println(A.getName() + " (" + Utils.getTImeHMFormat(A.getListTimeOfStopFirstWay().get(i)) + ") --> " + B.getName() + " (" + Utils.getTImeHMFormat(B.getListTimeOfStopFirstWay().get(i)) + ") | Average time " + Utils.getTImeHMFormat(B.getListTimeOfStopFirstWay().get(i) - A.getListTimeOfStopFirstWay().get(i)));
-				}
-			}
-		} else {
-			for(int i = 0; i < A.getListTimeOfStopSecondWay().size(); i++) {
-				if (!(A.getListTimeOfStopSecondWay().get(i) == -1 || B.getListTimeOfStopSecondWay().get(i) == -1)) {
-					System.out.println(A.getName() + " (" + Utils.getTImeHMFormat(A.getListTimeOfStopSecondWay().get(i)) + ") --> " + B.getName() + " (" + Utils.getTImeHMFormat(B.getListTimeOfStopSecondWay().get(i)) + ") | Average time " + Utils.getTImeHMFormat(B.getListTimeOfStopSecondWay().get(i) - A.getListTimeOfStopSecondWay().get(i)));
-				}
-			}
-		}
-	}
-	
-	*/
 	
 	//Get the Node from a String, if the Node does not exist we return null, which means this Node doesn't belong to the graph
 	public Node getNodeFromString(String nodeStr) {
@@ -175,32 +121,10 @@ public class Graph {
 		return null;
 	}
 	
-	public int getDistanceBetweenTwoNodes(ArrayList<Arc> arcs, Node A, Node B) {
-		
-		boolean found = false;
-		int i = 0;
-		
-		for(Arc arc : arcs) {
-			
-			if (arc.getBefore() == A) {
-				found = true;
-			}
-			
-			if (arc.getAfter() == B) {
-				return i + 1;
-			}
-			
-			if (found) {
-				i++;
-			}
-		}
-		return -1;
-		
-	}
-	
 	//Fuse all the graphs in a Graph ArrayList
 	public static Graph fuseGraphs(ArrayList<Graph> graphs) {
 		
+		//The id 0 is reserved by the fused graph
 		Graph graphToReturn = new Graph(0);
 		
 		//First we need to gather all the stops and then fuse the same stops and add all the arcs...

@@ -23,7 +23,6 @@ public class DijkstraAlgorithm {
     private Map<Node, Integer> distance;
 
     public DijkstraAlgorithm(Graph graph) {
-        // create a copy of the array so that we can operate on this array
         this.nodes = new ArrayList<Node>(graph.getNodeList());
         this.Arcs = new ArrayList<Arc>(graph.getArcListFirstWay());
         this.Arcs.addAll(graph.getArcListSecondtWay());
@@ -47,10 +46,8 @@ public class DijkstraAlgorithm {
     private void findMinimalDistances(Node node) {
         List<Node> adjacentNodes = getNeighbors(node);
         for (Node target : adjacentNodes) {
-            if (getShortestDistance(target) > getShortestDistance(node)
-                    + getDistance(node, target)) {
-                distance.put(target, getShortestDistance(node)
-                        + getDistance(node, target));
+            if (getShortestDistance(target) > getShortestDistance(node) + getDistance(node, target)) {
+                distance.put(target, getShortestDistance(node) + getDistance(node, target));
                 predecessors.put(target, node);
                 unSettledNodes.add(target);
             }
@@ -62,40 +59,44 @@ public class DijkstraAlgorithm {
         for (Arc arc : Arcs) {
             if (arc.getBefore().equals(node) && arc.getAfter().equals(target)) {
             	
-            	/*
+            	//If we use the "Shortest" method we only return the weight of the arc which is 0 by default
+            	
+            	//if we use the "Fastest" method we have to get the weight of each arcs at a certain time between two nodes, and we should have done this to achieve this method
+            	
+            /*
+            	
+            	ArrayList<Integer> beforeStops;
+            	ArrayList<Integer> afterStops;
             	
             	if (BusNetwork.getDepartTime() != null) {
             		int commonLine = node.getCommonBusLine(target);
             		int idOfTheClosestTimeOfStop = node.getClosestIdOfListOfTime(BusNetwork.getCurrentTime(), commonLine);
             		
+            		beforeStops = node.getListTimeOfStopFirstWay().get(commonLine);
+            		beforeStops.addAll(node.getListTimeOfStopSecondWay().get(commonLine));
             		
-            		arc.setWeight(target.getListTimeOfStopFirstWay().get(commonLine).get(idOfTheClosestTimeOfStop) - node.getListTimeOfStopFirstWay().get(commonLine).get(idOfTheClosestTimeOfStop));            		
+            		afterStops = target.getListTimeOfStopFirstWay().get(commonLine);
+            		afterStops.addAll(target.getListTimeOfStopSecondWay().get(commonLine));
+            		
+            		int weight = afterStops.get(idOfTheClosestTimeOfStop) - beforeStops.get(idOfTheClosestTimeOfStop);
+            		
+            		arc.setWeight(weight);            		
+            		
+            		if (arc.getWeight() < 0) {
+						arc.setWeight(- arc.getWeight());
+					}
+            		
+            		BusNetwork.setCurrentTime(target.getListTimeOfStopFirstWay().get(commonLine).get(idOfTheClosestTimeOfStop));
             		
 				}
             	
-            	System.out.println(arc.getWeight());
-            	
-            	*/
-            	
+       	*/
+
                 return arc.getWeight();
             }
         }
         throw new RuntimeException("Should not happen");
     }
-
-    /*
-    
-    private int getDistance(Node node, Node target) {
-        for (Arc Arc : Arcs) {
-            if (Arc.getBefore().equals(node)
-                    && Arc.getAfter().equals(target)) {
-                return Arc.getWeight();
-            }
-        }
-        throw new RuntimeException("Should not happen");
-    }
-    
-    */
 
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<Node>();
@@ -135,10 +136,6 @@ public class DijkstraAlgorithm {
         }
     }
 
-    /*
-     * This method returns the path from the source to the selected target and
-     * NULL if no path exists
-     */
     public ArrayList<Node> getPath(Node target) {
     	ArrayList<Node> path = new ArrayList<Node>();
         Node step = target;
@@ -151,7 +148,7 @@ public class DijkstraAlgorithm {
             step = predecessors.get(step);
             path.add(step);
         }
-        // Put it into the correct order
+
         Collections.reverse(path);
         return path;
     }

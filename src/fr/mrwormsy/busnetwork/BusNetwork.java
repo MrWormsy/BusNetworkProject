@@ -5,17 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.mysql.jdbc.Connection;
-
 import fr.mrwormsy.busnetwork.graph.Graph;
 import fr.mrwormsy.busnetwork.gui.Gui;
 import fr.mrwormsy.busnetwork.node.Node;
 
 public class BusNetwork {
 
-	private static Connection connection;
-	private static ArrayList<Graph> listOfBusLines;
-	private static Graph theGraph;
+	// === Static Variables ===
+	
+	private static ArrayList<Graph> listOfBusLines = null;
+	private static Graph theGraph = null;
 	
 	private static String stopBefore = null;
 	private static String stopAfter = null;
@@ -23,12 +22,22 @@ public class BusNetwork {
 	private static String departTime = null;
 	private static int currentTime = 0;
 	
-	public static int getCurrentTime() {
-		return currentTime;
+	// === Static Getters and Setters ===
+	
+	public static ArrayList<Graph> getListOfBusLines() {
+		return listOfBusLines;
 	}
 
-	public static void setCurrentTime(int timeOfDepart) {
-		BusNetwork.currentTime = timeOfDepart;
+	public static void setListOfBusLines(ArrayList<Graph> listOfBusLines) {
+		BusNetwork.listOfBusLines = listOfBusLines;
+	}
+
+	public static Graph getTheGraph() {
+		return theGraph;
+	}
+
+	public static void setTheGraph(Graph theGraph) {
+		BusNetwork.theGraph = theGraph;
 	}
 
 	public static String getStopBefore() {
@@ -43,6 +52,10 @@ public class BusNetwork {
 		return stopAfter;
 	}
 
+	public static void setStopAfter(String stopAfter) {
+		BusNetwork.stopAfter = stopAfter;
+	}
+
 	public static String getDepartTime() {
 		return departTime;
 	}
@@ -51,22 +64,22 @@ public class BusNetwork {
 		BusNetwork.departTime = departTime;
 	}
 
-	public static void setStopAfter(String stopAfter) {
-		BusNetwork.stopAfter = stopAfter;
+	public static int getCurrentTime() {
+		return currentTime;
 	}
 
-	
-	//TODO BE CAREFULL THAT WE CAN WAIT AT A STOP
+	public static void setCurrentTime(int currentTime) {
+		BusNetwork.currentTime = currentTime;
+	}
+
+	// === Main method ===
 	
 	public static void main(String[] args) {
 		
-		//First we open the SQL Stream
-		//connection = BusNewtorkSQL.connect();
-		
-		@SuppressWarnings("unused")
+		//The gui variable
 		Gui gui;
 		
-		//The file
+		//The file variable that will contain a bus line
 		FileInputStream file = null;
 		
 		//We init the list of bus stop to empty
@@ -74,15 +87,24 @@ public class BusNetwork {
 		
 		try {		
 			
-			//We will use a scanner which is easier to use
+			//We will use a scanner which is easier to use to read string values
+			
+			//The id is auto increment
+			
+			//We open the file
 			file = new FileInputStream("2_Piscine-Patinoire_Campus.txt");
+			
+			//We create a scanner to scan the different lines
 			Scanner scanner = new Scanner(file);
+			
+			//The graph is built according to the file read by the scanner
 			Graph graph = Graph.getGraphFromFile(scanner);
+			
+			//We then make the arcs
 			graph.buildArcs();
 			
 			listOfBusLines.add(graph);
 			
-			//We will use a scanner which is easier to use
 			file = new FileInputStream("1_Poisy-ParcDesGlaisins.txt");
 			scanner = new Scanner(file);
 			graph = Graph.getGraphFromFile(scanner);
@@ -90,7 +112,6 @@ public class BusNetwork {
 			
 			listOfBusLines.add(graph);
 			
-			//We will use a scanner which is easier to use
 			file = new FileInputStream("3_Test.txt");
 			scanner = new Scanner(file);
 			graph = Graph.getGraphFromFile(scanner);
@@ -98,7 +119,6 @@ public class BusNetwork {
 			
 			listOfBusLines.add(graph);
 			
-			//We will use a scanner which is easier to use
 			file = new FileInputStream("4_Test2.txt");
 			scanner = new Scanner(file);
 			graph = Graph.getGraphFromFile(scanner);
@@ -106,10 +126,16 @@ public class BusNetwork {
 			
 			listOfBusLines.add(graph);
 			
+			//The id 0 is for the fused graph
+			
+			//When we have all the bus lines, we fuse them into one big graph
 			theGraph = Graph.fuseGraphs(listOfBusLines);
 			
+			//We create a Gui and then init them
 			gui = new Gui();
+			gui.init();
 			
+			//This is for console only, the GUI version is in the Gui Class
 			//askTheClient();
 			
 			//Close the file at the end
@@ -120,19 +146,10 @@ public class BusNetwork {
 			e.printStackTrace();
 		}
 	}
+
 	
-	public static Graph getTheGraph() {
-		return theGraph;
-	}
-
-	public static void setTheGraph(Graph theGraph) {
-		BusNetwork.theGraph = theGraph;
-	}
-
-	public static void setConnection(Connection connection) {
-		BusNetwork.connection = connection;
-	}
-
+	//Console only, this should not be working anymore
+	
 	//Ask the client where he wants to go and when (optional, if this option is not set we return all the trips with the times related)
 	@SuppressWarnings("resource")
 	public static void askTheClient() {
@@ -219,22 +236,4 @@ public class BusNetwork {
 		theGraph.findPath(nodeA, nodeB);
 		
 	}
-	
-	//Get the SQL connection
-	public static Connection getConnection() {
-		return connection;
-	}
-
-	public static ArrayList<Graph> getListOfBusLines() {
-		return listOfBusLines;
-	}
-
-	public static void setListOfBusLines(ArrayList<Graph> listOfBusLines) {
-		BusNetwork.listOfBusLines = listOfBusLines;
-	}
-	
-	public static void addBusLineToListOfBusLines(Graph BusLines) {
-		BusNetwork.listOfBusLines.add(BusLines);
-	}
-
 }

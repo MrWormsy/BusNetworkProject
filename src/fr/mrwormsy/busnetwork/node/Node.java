@@ -43,7 +43,6 @@ public class Node {
 		return name;
 	}
 
-
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -138,7 +137,7 @@ public class Node {
 		
 		for(Integer i : this.getListTimeOfStopFirstWay().get(busLineId)) {
 			
-			if (lastTime != -1) {
+			if (lastTime != -1 && i != -1) {
 				if (time <= i && time > lastTime) {
 					return id;
 				}
